@@ -25,11 +25,11 @@ const getFestivals = async(params,thenCallback,catchCallback,finallyCallback)=>{
 		arrange:(params.sortMethod||'D'),
 		eventStartDate:
 			String(minDay.getFullYear())+
-			String(minDay.getMonth()+2)+
+			String(minDay.getMonth())+
 			String(minDay.getDate()),
 		eventEndDate:
 			String(maxDay.getFullYear())+
-			String(maxDay.getMonth()+2)+
+			String(maxDay.getMonth())+
 			String(maxDay.getDate()),
 		serviceKey:SERVICE_KEY
 	}})

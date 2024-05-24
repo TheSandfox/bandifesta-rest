@@ -5,9 +5,16 @@ const express = require('express');
 const router = express.Router();
 const config = {
 	importFestivals:{
-		pageNum:1,
-		editDate:0,
-		biggestEditDate:0,
+		pageNum:{
+			Kor:1,
+			Eng:1,
+			Jpn:1
+		},
+		editDate:{
+			Kor:0,
+			Eng:0,
+			Jpn:0
+		},
 	}
 }
 
@@ -38,20 +45,19 @@ const dateTimeFormat = (date) => {
 	return newString;
 }
 
-const updateLatestEditDate = () => {
-	console.log();
+const updateLatestEditDate = (language) => {
 	//해당 일자를 db의 최신업데이트일자에 덮어씌움(더 클때만)
-	db.getLatestEditDate((dateTime)=>{
-		config.importFestivals.editDate = dateTimeFormat(new Date(dateTime));
-		console.log('최신화 일자 업데이트: '+config.importFestivals.editDate);
+	db.getLatestEditDate(language,(dateTime)=>{
+		config.importFestivals.editDate[language] = dateTimeFormat(new Date(dateTime));
+		console.log(`최신화 일자 업데이트(${language}): `+config.importFestivals.editDate[language]);
 	})
 }
 
-const initLatestEditDate = ()=>{
+const initLatestEditDate = (language)=>{
 	//db의 최신업데이트일자를 가져와서 application에 할당
-	db.getLatestEditDate((dateTime)=>{
-		config.importFestivals.editDate = dateTimeFormat(new Date(dateTime));
-		console.log('어플리케이션 축제목록 최신화일자(마지막): '+config.importFestivals.editDate);
+	db.getLatestEditDate(language,(dateTime)=>{
+		config.importFestivals.editDate[language] = dateTimeFormat(new Date(dateTime));
+		console.log(`어플리케이션 축제목록 최신화일자(${language}): `+config.importFestivals.editDate[language]);
 	})
 }
 
@@ -65,33 +71,44 @@ const getLowestEditDate = (items)=>{
 	return result;
 }
 
-const importFestivals = (query)=>{
-	config.importFestivals.biggestEditDate = 0;
+const importFestivals = (language)=>{
 	TourAPI.getFestivals({
-		language:'Kor',
+		language,
 		itemsPerPage: '20',
-		pageNum: String(config.importFestivals.pageNum),
+		pageNum: String(config.importFestivals.pageNum[language]),
 		sortMethod: 'Q',
 	},(response)=>{
 		//가져오기 성공
 		if (!response.body.items.item||response.body.items.item.length<=0) {
-			updateLatestEditDate();
+			updateLatestEditDate(language);
 			console.log('더이상 가져올 게시물이 없습니다..');
 			return;
 		}
 		//가져온 내용물들의 수정일자들 중에서 가장 낮은 값을 가져온 뒤
 		//어플리케이션의 editDate와 비교
+		let executeOnce = false
 		let lowestEditDate = getLowestEditDate(response.body.items.item)
-		if (lowestEditDate<=parseInt(config.importFestivals.editDate)) {
-			console.log('이미 최신화된 컨텐츠 '+lowestEditDate+"/"+config.importFestivals.editDate);
-			return;
+		if (lowestEditDate<=parseInt(config.importFestivals.editDate[language])) {
+			console.log(`최신화 완료(${language}) `+lowestEditDate+"/"+config.importFestivals.editDate[language]);
+			executeOnce = true;
 		}
 		//내용물이 있어야만 db에 추가요청
-		db.importFestivals(response.body.items.item,(result)=>{
-			console.log('컨티뉴');
-			config.importFestivals.pageNum+=1;
-			setTimeout(()=>{importFestivals(query),2000});
-		});
+		db.importFestivals(response.body.items.item.map((festival)=>{
+			return {
+				...festival,
+				//EXTRA CONFIGURATION
+				language
+			}
+		}),
+			//한번만 실행하고 멈춰야하는지 판별
+			executeOnce
+			?()=>{}
+			:(result)=>{
+				console.log('다음 페이지를 탐색합니다..');
+				config.importFestivals.pageNum[language]+=1;
+				setTimeout(()=>{importFestivals(language),2000});
+			}
+		);
 	},(error)=>{
 		//가져오기 실패
 		console.log(error);
@@ -103,19 +120,19 @@ const importFestivals = (query)=>{
 
 //라우트 사용해서 수동임포트
 router.get('/importFestivals',(req,res)=>{
-	config.importFestivals.pageNum=0;
-	importFestivals(req.query);
+	config.importFestivals.pageNum[req.query.language]=0;
+	importFestivals(req.query.language);
 	res.send('페스티발 임포트됨');
 })
 
 //진행중인 행사 가져오기
 router.get('/getOngoingFestivals',(req,res)=>{
 	// console.log(req.query);
-	let {pageNum,itemsPerPage} = req.query;
+	let {pageNum,itemsPerPage,language} = req.query;
 	let today = new Date();
 	let dateString = dateFormat(today);
 	// console.log(dateString);
-	db.getOngoingFestivals(dateString,(pageNum-1),itemsPerPage,(festivals)=>{
+	db.getOngoingFestivals(dateString,(pageNum-1),itemsPerPage,language,(festivals)=>{
 		res.send(festivals)
 	})
 })

@@ -9,10 +9,12 @@ const connection = mysql.createConnection({
 //테이블이름
 const tableNames = {
 	festival:'festival',
-	config:'config'
+	user:'user',
+	festival_like:'festival_like',
+	notice:'notice'
 }
 
-//임포트 시 컬럼이름 매핑
+//축제 임포트 시 컬럼이름 매핑
 const columnNames = {
 	contentid:'festival_id',
 	addr1:'address1',
@@ -35,7 +37,9 @@ const columnNames = {
 	modifiedtime:'edit_date',
 	sigungucode:'sigungu_code',
 	tel:'tel',
-	title:'title'
+	title:'title',
+	//EXTRA CONFIGURATION
+	language:'language'
 }
 
 //이스케이프 오작동 방지
@@ -58,9 +62,10 @@ function convertFestivalQuery(festival) {
 }
 
 //최신 업뎃일자 가져오기
-function getLatestEditDate(callback) {
+function getLatestEditDate(language,callback) {
 	connection.query(`
 		SELECT edit_date FROM ${tableNames['festival']}
+		WHERE language = '${replaceEscape(language)}'
 		ORDER BY edit_date DESC LIMIT 1
 	`,(err,result)=>{
 		if(err) throw err;
@@ -121,14 +126,16 @@ function importFestivals(festivals,callback) {
 }
 
 //진행중인 축제들
-function getOngoingFestivals(dateString,pageNum,itemsPerPage,callback) {
+function getOngoingFestivals(dateString,pageNum,itemsPerPage,language,callback) {
+	console.log("진행중인 축제 가져오기, 날짜 = "+dateString+", 언어 = "+language);
 	//페이지값 클램핑
 	if(!pageNum||pageNum<=0){pageNum=0}
 	//셀렉트문
 	connection.query(
 		`
 		SELECT * FROM ${tableNames['festival']}
-		WHERE end_date > '${dateString}' AND start_date < '${dateString}'
+		WHERE end_date > '${dateString}' AND start_date < '${dateString}' AND language = '${language}'
+		ORDER BY start_date DESC
 		LIMIT ${pageNum*itemsPerPage},${(pageNum+1)*itemsPerPage}
 		`
 		,(err,festivals)=>{
