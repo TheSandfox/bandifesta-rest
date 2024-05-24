@@ -2,7 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const api = require('./routes/api.cjs');
+const api = require('./api.cjs');
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
@@ -19,5 +19,7 @@ app.listen(PORT, () => {
 	//APP LISTEN 성공
     console.log(`Server run : http://localhost:${PORT}/`);
 	//타이머 콜백 등록
-	setInterval(()=>{api.config.import.count=0;api.importFestivals();}, 3600*2 * 1000);
+	setInterval(()=>{api.config.importFestivals.pageNum=0;api.importFestivals();}, 3600*2 * 1000);
+	//최신 임포트일자 가져오기
+	api.initLatestEditDate();
 })

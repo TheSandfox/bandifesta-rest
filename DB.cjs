@@ -6,6 +6,13 @@ const connection = mysql.createConnection({
 	database	: 'bandifesta',//schema이름임.
 	dateStrings	: 'date'
 });
+//테이블이름
+const tableNames = {
+	festival:'festival',
+	config:'config'
+}
+
+//임포트 시 컬럼이름 매핑
 const columnNames = {
 	contentid:'festival_id',
 	addr1:'address1',
@@ -31,6 +38,7 @@ const columnNames = {
 	title:'title'
 }
 
+//이스케이프 오작동 방지
 function replaceEscape(raw) {
 	let rs = raw.replaceAll(`\\`,`\\\\`);
 	rs = rs.replaceAll(`\'`,`\\'`);
@@ -49,6 +57,24 @@ function convertFestivalQuery(festival) {
 	;
 }
 
+//최신 업뎃일자 가져오기
+function getLatestEditDate(callback) {
+	connection.query(`
+		SELECT edit_date FROM ${tableNames['festival']}
+		ORDER BY edit_date DESC LIMIT 1
+	`,(err,result)=>{
+		if(err) throw err;
+		//축제 리스트 중에서 최신화일자가 가장 큰 것을 가져옴
+		if(result.length>0) {
+			//있으면
+			callback(result[0].edit_date);
+		} else {
+			//없으면 디폴트 날짜 주기
+			return '2023-05-05 00:00:00';
+		}
+	})
+}
+
 //축제 게시물 수집!
 function importFestivals(festivals,callback) {
 	let insertQueries = ''
@@ -59,7 +85,7 @@ function importFestivals(festivals,callback) {
 		if(index==0) {
 			//쿼리문 헤더
 			customColumns = Object.keys(festival).map(fieldName=>columnNames[fieldName])
-			insertQueries = 'INSERT into festival ('+customColumns.join(',')+') VALUES'
+			insertQueries = 'INSERT into '+tableNames['festival']+' ('+customColumns.join(',')+') VALUES'
 			//축제 오브젝트를 쿼리문으로 변환해서 최종 쿼리문에 연결합니다.
 			insertQueries += convertFestivalQuery(festival);
 		} else {
@@ -85,7 +111,7 @@ function importFestivals(festivals,callback) {
 			//result를 활용할 일은 없을 것 같습니다.
 			//result의 info값을 파싱해서 Duplicates값을 확인합니다.
 			let newResult = result.info.split(' ').map(val=>val.trim()).filter(val=>!isNaN(parseInt(val)));
-			console.log(newResult);
+			// console.log(newResult);
 			callback({
 				records:newResult[0],
 				duplicates:newResult[1],
@@ -94,6 +120,26 @@ function importFestivals(festivals,callback) {
 	})
 }
 
+//진행중인 축제들
+function getOngoingFestivals(dateString,pageNum,itemsPerPage,callback) {
+	//페이지값 클램핑
+	if(!pageNum||pageNum<=0){pageNum=0}
+	//셀렉트문
+	connection.query(
+		`
+		SELECT * FROM ${tableNames['festival']}
+		WHERE end_date > '${dateString}' AND start_date < '${dateString}'
+		LIMIT ${pageNum*itemsPerPage},${(pageNum+1)*itemsPerPage}
+		`
+		,(err,festivals)=>{
+			if(err) throw err;
+			callback(festivals);
+		}
+	);
+}
+
 module.exports = {
-	importFestivals
+	getLatestEditDate,
+	importFestivals,
+	getOngoingFestivals,
 }
