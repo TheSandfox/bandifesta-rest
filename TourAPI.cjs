@@ -2,9 +2,9 @@ const axios =  require("axios");
 const APPLICATION_NAME = 'bandifesta'
 const SERVICE_KEY = '+ArYhKOZcxDx6hjFGpftMY/IAhHCTOHX+GQm/rYzumqwDOlNLI1vh1c+Z52O20B1fhakJsvh1P+Yf9+0+Xfy7w==';
 const BASE_URL = {
-	Kor:'https://apis.data.go.kr/B551011/KorService1/',
-	Eng:'https://apis.data.go.kr/B551011/EngService1/',
-	Jpn:'https://apis.data.go.kr/B551011/JpnService1/'
+	Kor:'https://apis.data.go.kr/B551011/KorService1',
+	Eng:'https://apis.data.go.kr/B551011/EngService1',
+	Jpn:'https://apis.data.go.kr/B551011/JpnService1'
 };
 /*{
 	language:Kor or Eng or Jpn,
@@ -16,7 +16,7 @@ const getFestivals = async(params,thenCallback,catchCallback,finallyCallback)=>{
 	const today = new Date();
 	const minDay = new Date(today.setFullYear(today.getFullYear()-1));
 	const maxDay = new Date(today.setFullYear(today.getFullYear()+2));
-	await axios.get(BASE_URL[params.language]+'searchFestival1',{params:{
+	await axios.get(BASE_URL[params.language]+'/searchFestival1',{params:{
 		numOfRows:String(parseInt(params.itemsPerPage)),
 		pageNo:String(parseInt(params.pageNum||1)),
 		MobileOS:'WIN',
