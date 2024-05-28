@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const KakaoLoginAPI = require('../KakaoLoginAPI.cjs')
-const DEBUG = false;
-const domain = DEBUG
-?'http://localhost:5173'
-:'https://thesandfox.github.io/'
+const KakaoLoginAPI = require('../KakaoLoginAPI.cjs');
+const config = require('../config.cjs');
 
 //로그인 시 토큰요청
 router.post('/requestToken',(req,res)=>{
@@ -13,19 +10,19 @@ router.post('/requestToken',(req,res)=>{
 		//로그인성공;
 		console.log('성공맨'+response.data['access_token']);
 		res.cookie('accessToken',response.data['access_token'],{
-			domain,
+			domain:config.REDIRECT_URI,
 			sameSite:'none',
 			secure:true
 		});
 		res.cookie('refreshToken',response.data['refresh_token'],{
-			domain,
+			domain:config.REDIRECT_URI,
 			sameSite:'none',
 			secure:true
 		});
 		res.send('good');
 	},(error)=>{
-		console.log('실패맨');
-		// console.log(error);
+		// console.log('실패맨');
+		console.log(error);
 	},()=>{
 
 	})
