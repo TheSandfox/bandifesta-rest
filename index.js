@@ -1,5 +1,6 @@
 // express 모듈 호출
 require('dotenv').config();
+console.log(process.env.DB_PASSWORD);
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
