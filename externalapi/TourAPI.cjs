@@ -1,6 +1,5 @@
 const axios =  require("axios");
 const APPLICATION_NAME = 'bandifesta'
-const SERVICE_KEY = '+ArYhKOZcxDx6hjFGpftMY/IAhHCTOHX+GQm/rYzumqwDOlNLI1vh1c+Z52O20B1fhakJsvh1P+Yf9+0+Xfy7w==';
 const BASE_URL = {
 	Kor:'https://apis.data.go.kr/B551011/KorService1',
 	Eng:'https://apis.data.go.kr/B551011/EngService1',
@@ -31,7 +30,7 @@ const getFestivals = async(params,thenCallback,catchCallback,finallyCallback)=>{
 			String(maxDay.getFullYear())+
 			String(maxDay.getMonth())+
 			String(maxDay.getDate()),
-		serviceKey:SERVICE_KEY
+		serviceKey:process.env.TOUR_SURVICE_KEY
 	}})
 	.then((response)=>{
 		// 성공 핸들링

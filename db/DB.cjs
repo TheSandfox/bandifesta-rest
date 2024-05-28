@@ -2,7 +2,7 @@ const mysql      = require('mysql2');
 const connection = mysql.createConnection({
 	host		: 'gihoon.info',
 	user		: 'bandifesta',
-	password	: 'qkselvptmxk1!@A',
+	password	: process.env.DB_PASSWORD,
 	database	: 'bandifesta',//schema이름임.
 	dateStrings	: 'date'
 });

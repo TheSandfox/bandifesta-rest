@@ -2,10 +2,6 @@ const express = require('express');
 const db = require('../db/DB.cjs');
 const router = express.Router();
 const KakaoLoginAPI = require('../externalapi/KakaoLoginAPI.cjs');
-const config = require('../config.cjs');
-// const domain = config.DEBUG
-// ?'http://localhost:5173'
-// :'https://thesandfox.github.io'
 
 //로그인 시 토큰요청
 router.post('/login',(req,res)=>{
@@ -68,6 +64,20 @@ router.post('/unlink',(req,res)=>{
 	},()=>{
 
 	})
+})
+
+//리프레시 토큰
+router.post('/refreshToken',(req,res)=>{
+	KakaoLoginAPI.refreshToken(req.body,(response)=>{
+		res.send({
+			...response.data
+		});
+	},(error)=>{
+		console.log(error);
+	},()=>{
+
+	})
+	// res.send('카카오 로그인 리다이렉트');
 })
 
 module.exports = {
