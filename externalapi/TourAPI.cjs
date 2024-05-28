@@ -42,7 +42,7 @@ const getFestivals = async(params,thenCallback,catchCallback,finallyCallback)=>{
 		if(catchCallback) {catchCallback(error)}
 	})
 	.finally(()=>{
-		finallyCallback();
+		if(finallyCallback) {finallyCallback()};
 	});
 }
 

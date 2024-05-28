@@ -1,6 +1,6 @@
 // import * as express from 'express'
-const db = require('../DB.cjs');
-const TourAPI = require('../TourAPI.cjs');
+const db = require('../db/DB.cjs');
+const TourAPI = require('../externalapi/TourAPI.cjs');
 const express = require('express');
 const router = express.Router();
 const config = {

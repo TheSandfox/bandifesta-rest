@@ -145,8 +145,47 @@ function getOngoingFestivals(dateString,pageNum,itemsPerPage,language,callback) 
 	);
 }
 
+//유저 정보(1개)
+function getUser(kakaoId,callback) {
+	connection.query(
+		`
+		SELECT kakao_id from ${tableNames['user']}
+		WHERE kakao_id = '${kakaoId}'
+		`
+		,(err,result)=>{
+			if(err) throw err;
+			callback(result);
+		}
+	)
+}
+
+//유저정보 등록(최초)
+function registerUser(kakaoId,callback) {
+	connection.query(
+		`
+		INSERT INTO ${tableNames['user']}(kakao_id,name)
+		VALUES(${kakaoId},'무명씨')
+		`
+	,(err)=>{
+		if(err) throw err;
+	})
+}
+
+//유저정보 말소
+function unregisterUser(kakaoId,callback) {
+	connection.query(`
+		DELETE FROM ${tableNames['user']}
+		WHERE kakao_id = ${kakaoId};
+	`,(err,result)=>{
+		if(err) throw err;
+	})
+}
+
 module.exports = {
 	getLatestEditDate,
 	importFestivals,
 	getOngoingFestivals,
+	getUser,
+	registerUser,
+	unregisterUser
 }
