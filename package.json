@@ -16,6 +16,7 @@
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "memorystore": "^1.6.7",
-    "mysql2": "^3.9.7"
+    "mysql2": "^3.9.7",
+    "qs": "^6.12.1"
   }
 }
