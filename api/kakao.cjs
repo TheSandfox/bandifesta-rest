@@ -14,17 +14,15 @@ router.post('/requestToken',(req,res)=>{
 		console.log('성공맨'+response.data['access_token']);
 		res.cookie('accessToken',response.data['access_token'],{
 			domain,
-			sameSite:'none',
+			sameSite:false,
 			secure:true,
 			httpOnly:false,
-			path:'/bandifesta'
 		});
 		res.cookie('refreshToken',response.data['refresh_token'],{
 			domain,
-			sameSite:'none',
+			sameSite:false,
 			secure:true,
 			httpOnly:false,
-			path:'/bandifesta'
 		});
 		res.send('good');
 	},(error)=>{
