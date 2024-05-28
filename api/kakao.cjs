@@ -15,12 +15,14 @@ router.post('/requestToken',(req,res)=>{
 		res.cookie('accessToken',response.data['access_token'],{
 			domain,
 			sameSite:'none',
-			secure:true
+			secure:true,
+			httpOnly:false
 		});
 		res.cookie('refreshToken',response.data['refresh_token'],{
 			domain,
 			sameSite:'none',
-			secure:true
+			secure:true,
+			httpOnly:false
 		});
 		res.send('good');
 	},(error)=>{
