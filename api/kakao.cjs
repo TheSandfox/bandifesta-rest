@@ -16,13 +16,15 @@ router.post('/requestToken',(req,res)=>{
 			domain,
 			sameSite:'none',
 			secure:true,
-			httpOnly:false
+			httpOnly:false,
+			path:'/bandifesta'
 		});
 		res.cookie('refreshToken',response.data['refresh_token'],{
 			domain,
 			sameSite:'none',
 			secure:true,
-			httpOnly:false
+			httpOnly:false,
+			path:'/bandifesta'
 		});
 		res.send('good');
 	},(error)=>{
