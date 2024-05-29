@@ -1,8 +1,5 @@
 const axios = require('axios');
 const qs = require('qs')
-const REDIRECT_URI = process.env.DEBUG
-?'http://localhost:5173/bandifesta'
-:'https://thesandfox.github.io/bandifesta'
 
 const refreshToken = async(body,thenCallback,catchCallback,finallyCallback)=>{
 	await axios.post('https://kauth.kakao.com/oauth/token',qs.stringify({
@@ -34,7 +31,7 @@ const login = async(body,thenCallback,catchCallback,finallyCallback)=>{
 		...body/*CODE ONLY*/,
 		grant_type:'authorization_code',
 		client_id:process.env.KAKAO_REST_KEY,
-		redirect_uri:REDIRECT_URI,
+		redirect_uri:process.env.REDIRECT_URI,
 	}),{
 		headers:{
 			'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
@@ -117,6 +114,5 @@ module.exports = {
 	login,
 	logout,
 	unlink,
-	refreshToken,
-	REDIRECT_URI
+	refreshToken
 }
