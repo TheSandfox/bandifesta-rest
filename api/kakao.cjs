@@ -35,7 +35,16 @@ router.post('/login',(req,res)=>{
 //카카오에서 유저정보가져오깅
 router.post('/getKakaoUser',(req,res)=>{
 	KakaoLoginAPI.getKakaoUser(req.body.access_token,(response)=>{
-		res.send(response.data);
+		console.log(response.data);
+		res.send({
+			id:response.data['id'],
+			nickname:response.data.properties.nickname
+				||'',
+			profile:response.data.properties.profile_image
+				||'',
+			thumbnail:response.data.properties.thumbnail_image
+				||'',
+		});
 	},(error)=>{
 
 	},()=>{
