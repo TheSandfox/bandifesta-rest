@@ -138,6 +138,62 @@ router.get('/getOngoing',(req,res)=>{
 	})
 })
 
+//행사 디테일(Info)
+router.get('/getDetail',(req,res)=>{
+	let {festivalId} = req.query;
+	//db에서 언어 추출한 뒤 tourapi에 넘기기
+	db.getFestival(festivalId,(result)=>{
+		if (result.length>0) {
+			//DB조회 성공
+			let festival = result[0];
+			//TOURAPI에 Info 요청
+			TourAPI.getFestivalDetailInfo({
+				language:festival.language,
+				festivalId,
+				festivalType:festival.festival_type
+			},(response1)=>{
+				//Info 조회 성공
+				let resObj = {...response1.body.items.item[0]};
+				TourAPI.getFestivalDetailIntro({
+					language:festival.language,
+					festivalId,
+					festivalType:festival.festival_type
+				},(response2)=>{
+					//Intro 조회 성공
+					resObj = {
+						...resObj,
+						...response2.body.items.item[0]
+					}
+					TourAPI.getFestivalDetailCommon({
+						language:festival.language,
+						festivalId,
+						festivalType:festival.festival_type
+					},(response3)=>{
+						//Common 조회 성공
+						resObj = {
+							...resObj,
+							...response3.body.items.item[0]
+						}
+						res.send(resObj);
+					},(error3)=>{
+						//Common 조회 실패
+						console.log(error3);
+					})
+				},(error2)=>{
+					//Intro 조회 실패
+					console.log(error2);
+				})
+			},(error1)=>{
+				//Info 조회 실패
+				console.log(error1);
+			})
+		} else {
+			//DB조회 실패
+			res.send({});
+		}
+	});
+})
+
 //테스트
 router.get('/test',(req,res)=>{
 	res.send('Hello World!');

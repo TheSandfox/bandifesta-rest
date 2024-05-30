@@ -5,6 +5,12 @@ const BASE_URL = {
 	Eng:'https://apis.data.go.kr/B551011/EngService1',
 	Jpn:'https://apis.data.go.kr/B551011/JpnService1'
 };
+const REQUEST_CONFIG = {
+	MobileOS:'WIN',
+	MobileApp:APPLICATION_NAME,
+	_type:'json',
+	serviceKey:process.env.TOUR_SURVICE_KEY
+}
 /*{
 	language:Kor or Eng or Jpn,
 	itemsPerPage: 페이지당 아이템갯수,
@@ -16,11 +22,9 @@ const getFestivals = async(params,thenCallback,catchCallback,finallyCallback)=>{
 	const minDay = new Date(today.setFullYear(today.getFullYear()-1));
 	const maxDay = new Date(today.setFullYear(today.getFullYear()+2));
 	await axios.get(BASE_URL[params.language]+'/searchFestival1',{params:{
+		...REQUEST_CONFIG,
 		numOfRows:String(parseInt(params.itemsPerPage)),
 		pageNo:String(parseInt(params.pageNum||1)),
-		MobileOS:'WIN',
-		MobileApp:APPLICATION_NAME,
-		_type:'json',
 		arrange:(params.sortMethod||'D'),
 		eventStartDate:
 			String(minDay.getFullYear())+
@@ -30,7 +34,69 @@ const getFestivals = async(params,thenCallback,catchCallback,finallyCallback)=>{
 			String(maxDay.getFullYear())+
 			String(maxDay.getMonth())+
 			String(maxDay.getDate()),
-		serviceKey:process.env.TOUR_SURVICE_KEY
+	}})
+	.then((response)=>{
+		// 성공 핸들링
+		thenCallback(response.data.response);
+	})
+	.catch((error)=>{
+		// 에러 핸들링
+		if(catchCallback) {catchCallback(error)}
+	})
+	.finally(()=>{
+		if(finallyCallback) {finallyCallback()};
+	});
+}
+
+const getFestivalDetailInfo = async(params,thenCallback,catchCallback,finallyCallback)=>{
+	await axios.get(BASE_URL[params.language]+'/detailInfo1',{params:{
+		...REQUEST_CONFIG,
+		contentId:params.festivalId,
+		contentTypeId:params.festivalType
+	}})
+	.then((response)=>{
+		// 성공 핸들링
+		thenCallback(response.data.response);
+	})
+	.catch((error)=>{
+		// 에러 핸들링
+		if(catchCallback) {catchCallback(error)}
+	})
+	.finally(()=>{
+		if(finallyCallback) {finallyCallback()};
+	});
+}
+
+const getFestivalDetailIntro = async(params,thenCallback,catchCallback,finallyCallback)=>{
+	await axios.get(BASE_URL[params.language]+'/detailIntro1',{params:{
+		...REQUEST_CONFIG,
+		contentId:params.festivalId,
+		contentTypeId:params.festivalType
+	}})
+	.then((response)=>{
+		// 성공 핸들링
+		thenCallback(response.data.response);
+	})
+	.catch((error)=>{
+		// 에러 핸들링
+		if(catchCallback) {catchCallback(error)}
+	})
+	.finally(()=>{
+		if(finallyCallback) {finallyCallback()};
+	});
+}
+
+const getFestivalDetailCommon = async(params,thenCallback,catchCallback,finallyCallback)=>{
+	await axios.get(BASE_URL[params.language]+'/detailCommon1',{params:{
+		...REQUEST_CONFIG,
+		contentId:params.festivalId,
+		contentTypeId:params.festivalType,
+		firstImageYN:'Y',
+		defaultYN:'Y',
+		areacodeYN:'Y',
+		addrinfoYN:'Y',
+		mapinfoYN:'Y',
+		overviewYN:'Y',
 	}})
 	.then((response)=>{
 		// 성공 핸들링
@@ -46,5 +112,8 @@ const getFestivals = async(params,thenCallback,catchCallback,finallyCallback)=>{
 }
 
 module.exports = {
-	getFestivals
+	getFestivals,
+	getFestivalDetailInfo,
+	getFestivalDetailIntro,
+	getFestivalDetailCommon,
 }

@@ -138,11 +138,22 @@ function getOngoingFestivals(dateString,pageNum,itemsPerPage,language,callback) 
 		ORDER BY start_date DESC
 		LIMIT ${pageNum*itemsPerPage},${(pageNum+1)*itemsPerPage}
 		`
-		,(err,festivals)=>{
+		,(err,result)=>{
 			if(err) throw err;
-			callback(festivals);
+			callback(result);
 		}
 	);
+}
+
+//축제 행 한개 가져오기
+function getFestival(festivalId,callback){
+	connection.query(`
+		SELECT * FROM ${tableNames['festival']}
+		WHERE festival_id = '${festivalId}'
+	`,(err,result)=>{
+		if(err) throw err;
+		callback(result);
+	})
 }
 
 //유저 정보(1개)
@@ -184,6 +195,7 @@ function unregisterUser(kakaoId,callback) {
 module.exports = {
 	getLatestEditDate,
 	importFestivals,
+	getFestival,
 	getOngoingFestivals,
 	getUser,
 	registerUser,
