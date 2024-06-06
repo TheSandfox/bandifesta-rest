@@ -26,6 +26,7 @@ router.post('/login',(req,res)=>{
 	},(error)=>{
 		// console.log('실패맨');
 		console.log(error);
+		res.status(500).json({status:500});
 	},()=>{
 
 	})
@@ -46,7 +47,7 @@ router.post('/getKakaoUser',(req,res)=>{
 				||'',
 		});
 	},(error)=>{
-
+		res.status(500).json({status:500});
 	},()=>{
 
 	})
@@ -57,7 +58,7 @@ router.post('/logout',(req,res)=>{
 	KakaoLoginAPI.logout(req.body.access_token,(response)=>{
 		res.send(response.data);
 	},(error)=>{
-
+		res.status(500).json({status:500});
 	},()=>{
 
 	})
@@ -69,7 +70,7 @@ router.post('/unlink',(req,res)=>{
 		db.unregisterUser(response.data.id);
 		res.send(response.data);
 	},(error)=>{
-
+		res.status(500).json({status:500});
 	},()=>{
 
 	})
@@ -83,6 +84,7 @@ router.post('/refreshToken',(req,res)=>{
 		});
 	},(error)=>{
 		console.log(error);
+		res.status(500).json({status:500});
 	},()=>{
 
 	})

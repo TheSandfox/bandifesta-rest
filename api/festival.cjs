@@ -50,7 +50,7 @@ const updateLatestEditDate = (language) => {
 	db.getLatestEditDate(language,(dateTime)=>{
 		config.import.editDate[language] = dateTimeFormat(new Date(dateTime));
 		console.log(`최신화 일자 업데이트(${language}): `+config.import.editDate[language]);
-	})
+	},()=>{})
 }
 
 const initLatestEditDate = (language)=>{
@@ -58,7 +58,7 @@ const initLatestEditDate = (language)=>{
 	db.getLatestEditDate(language,(dateTime)=>{
 		config.import.editDate[language] = dateTimeFormat(new Date(dateTime));
 		console.log(`어플리케이션 축제목록 최신화일자(${language}): `+config.import.editDate[language]);
-	})
+	},()=>{})
 }
 
 const getLowestEditDate = (items)=>{
@@ -100,6 +100,8 @@ const importFestivals = (language)=>{
 				//EXTRA CONFIGURATION
 				language
 			}
+		},(error)=>{
+			
 		}),
 			//한번만 실행하고 멈춰야하는지 판별
 			executeOnce
@@ -113,6 +115,7 @@ const importFestivals = (language)=>{
 	},(error)=>{
 		//가져오기 실패
 		console.log(error);
+		res.status(500).json({status:500});
 	},()=>{
 		//FINALLY
 		
@@ -135,6 +138,8 @@ router.get('/getOngoing',(req,res)=>{
 	// console.log(dateString);
 	db.getOngoingFestivals(dateString,(pageNum-1),itemsPerPage,language,(festivals)=>{
 		res.send(festivals)
+	},(error)=>{
+		res.status(500).json({status:500});
 	})
 })
 
@@ -178,19 +183,24 @@ router.get('/getDetail',(req,res)=>{
 					},(error3)=>{
 						//Common 조회 실패
 						console.log(error3);
+						res.status(500).json({status:500});
 					})
 				},(error2)=>{
 					//Intro 조회 실패
 					console.log(error2);
+					res.status(500).json({status:500});
 				})
 			},(error1)=>{
 				//Info 조회 실패
 				console.log(error1);
+				res.status(500).json({status:500});
 			})
 		} else {
 			//DB조회 실패
 			res.send({});
 		}
+	},(err)=>{
+		res.status(500).json({status:500});
 	});
 })
 

@@ -62,17 +62,20 @@ function convertFestivalQuery(festival) {
 }
 
 //최신 업뎃일자 가져오기
-function getLatestEditDate(language,callback) {
+function getLatestEditDate(language,thenCallback,catchCallback) {
 	connection.query(`
 		SELECT edit_date FROM ${tableNames['festival']}
 		WHERE language = '${replaceEscape(language)}'
 		ORDER BY edit_date DESC LIMIT 1
 	`,(err,result)=>{
-		if(err) throw err;
+		if(err&&catchCallback) {
+			catchCallback(err);
+			return;
+		}
 		//축제 리스트 중에서 최신화일자가 가장 큰 것을 가져옴
 		if(result.length>0) {
 			//있으면
-			callback(result[0].edit_date);
+			thenCallback(result[0].edit_date);
 		} else {
 			//없으면 디폴트 날짜 주기
 			return '2023-05-05 00:00:00';
@@ -81,7 +84,7 @@ function getLatestEditDate(language,callback) {
 }
 
 //축제 게시물 수집!
-function importFestivals(festivals,callback) {
+function importFestivals(festivals,thenCallback,catchCallback) {
 	let insertQueries = ''
 	let customColumns = []
 	//축제리스트가 유효하지 않거나 크기가 0이하일 경우 무시
@@ -111,13 +114,16 @@ function importFestivals(festivals,callback) {
 	connection.query(
 		insertQueries
 		,(err,result)=>{
-			if(err) {throw err}
+			if(err&&catchCallback) {
+				catchCallback(err);
+				return;
+			}
 			//db에 insert하는 역할만 하지 프론트 응답용은 아니기 때문에
 			//result를 활용할 일은 없을 것 같습니다.
 			//result의 info값을 파싱해서 Duplicates값을 확인합니다.
 			let newResult = result.info.split(' ').map(val=>val.trim()).filter(val=>!isNaN(parseInt(val)));
 			// console.log(newResult);
-			callback({
+			thenCallback({
 				records:newResult[0],
 				duplicates:newResult[1],
 				warnings:newResult[2]
@@ -126,7 +132,7 @@ function importFestivals(festivals,callback) {
 }
 
 //진행중인 축제들
-function getOngoingFestivals(dateString,pageNum,itemsPerPage,language,callback) {
+function getOngoingFestivals(dateString,pageNum,itemsPerPage,language,thenCallback,catchCallback) {
 	console.log("진행중인 축제 가져오기, 날짜 = "+dateString+", 언어 = "+language);
 	//페이지값 클램핑
 	if(!pageNum||pageNum<=0){pageNum=0}
@@ -139,56 +145,70 @@ function getOngoingFestivals(dateString,pageNum,itemsPerPage,language,callback) 
 		LIMIT ${pageNum*itemsPerPage},${(pageNum+1)*itemsPerPage}
 		`
 		,(err,result)=>{
-			if(err) throw err;
-			callback(result);
+			if(err&&catchCallback) {
+				catchCallback(err);
+			};
+			thenCallback(result);
 		}
 	);
 }
 
 //축제 행 한개 가져오기
-function getFestival(festivalId,callback){
+function getFestival(festivalId,thenCallback,catchCallback){
 	connection.query(`
 		SELECT * FROM ${tableNames['festival']}
 		WHERE festival_id = '${festivalId}'
 	`,(err,result)=>{
-		if(err) throw err;
-		callback(result);
+		if(err&&catchCallback) {
+			catchCallback(err);
+			return;
+		}
+		thenCallback(result);
 	})
 }
 
 //유저 정보(1개)
-function getUser(kakaoId,callback) {
+function getUser(kakaoId,thenCallback,catchCallback) {
 	connection.query(
 		`
 		SELECT kakao_id from ${tableNames['user']}
 		WHERE kakao_id = '${kakaoId}'
 		`
 		,(err,result)=>{
-			if(err) throw err;
-			callback(result);
+			if(err&&catchCallback) {
+				catchCallback(err);
+				return;
+			}
+			thenCallback(result);
 		}
 	)
 }
 
 //유저정보 등록(최초)
-function registerUser(kakaoId,callback) {
+function registerUser(kakaoId,thenCallback,catchCallback) {
 	connection.query(
 		`
 		INSERT INTO ${tableNames['user']}(kakao_id,name)
 		VALUES(${kakaoId},'무명씨')
 		`
 	,(err)=>{
-		if(err) throw err;
+		if(err&&catchCallback) {
+			catchCallback(err);
+			return;
+		}
 	})
 }
 
 //유저정보 말소
-function unregisterUser(kakaoId,callback) {
+function unregisterUser(kakaoId,thenCallback,catchCallback) {
 	connection.query(`
 		DELETE FROM ${tableNames['user']}
 		WHERE kakao_id = ${kakaoId};
 	`,(err,result)=>{
-		if(err) throw err;
+		if(err&&catchCallback) {
+			catchCallback(err);
+			return;
+		}
 	})
 }
 
