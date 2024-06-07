@@ -131,26 +131,83 @@ function importFestivals(festivals,thenCallback,catchCallback) {
 	})
 }
 
-//진행중인 축제들
-function getOngoingFestivals(dateString,pageNum,itemsPerPage,language,thenCallback,catchCallback) {
-	console.log("진행중인 축제 가져오기, 날짜 = "+dateString+", 언어 = "+language);
+//축제들 가져오기 범용함수
+function getFestivals(dateString,pageNum,itemsPerPage,language,periodType,sortMethod,thenCallback,catchCallback) {
+	console.log("축제 가져오기, 날짜 = "+dateString+", 언어 = "+language);
+	let dateFilter = ''
+	//날짜필터 분기
+	switch(parseInt(periodType)) {
+	case 0 : 
+		//전체
+		dateFilter = `WHERE `
+		break;
+	case 1 : 
+		//진행중
+		dateFilter = `WHERE festival.end_date > '${dateString}' AND festival.start_date < '${dateString}' AND `
+		break;
+	case 2 : 
+		//예정
+		dateFilter = `WHERE festival.start_date > '${dateString}' AND `
+		break;
+	case 3 : 
+		//마감
+		dateFilter = `WHERE festival.end_date < '${dateString}' AND `
+		break;
+	default :
+		catchCallback({});
+		return;
+	}
+	//타입캐스트
+	pageNum = parseInt(pageNum);
+	itemsPerPage = parseInt(itemsPerPage);
 	//페이지값 클램핑
-	if(!pageNum||pageNum<=0){pageNum=0}
+	if(pageNum<=0){pageNum=0}
+	console.log((pageNum*itemsPerPage)+', '+((pageNum+1)*itemsPerPage));
 	//셀렉트문
-	connection.query(
-		`
-		SELECT * FROM ${tableNames['festival']}
-		WHERE end_date > '${dateString}' AND start_date < '${dateString}' AND language = '${language}'
-		ORDER BY start_date DESC
-		LIMIT ${pageNum*itemsPerPage},${(pageNum+1)*itemsPerPage}
-		`
-		,(err,result)=>{
-			if(err&&catchCallback) {
-				catchCallback(err);
-			};
-			thenCallback(result);
-		}
-	);
+	switch(parseInt(sortMethod)) {
+	case 0 :
+		//날짜순
+		connection.query(
+			`
+			SELECT * FROM ${tableNames['festival']}
+			${dateFilter}
+			festival.language = '${language}'
+			ORDER BY start_date DESC
+			LIMIT ${pageNum*itemsPerPage},${itemsPerPage}
+			`
+			,(err,result)=>{
+				if(err&&catchCallback) {
+					catchCallback(err);
+				};
+				thenCallback(result);
+			}
+		);
+		break;
+	case 1 :
+		//조아요순
+		connection.query(
+			`
+			SELECT festival.*, COUNT(festival_like.festival_id) AS like_count
+			FROM festival
+			LEFT JOIN festival_like ON festival.festival_id = festival_like.festival_id
+			${dateFilter}
+			festival.language = '${language}'
+			GROUP BY festival.festival_id
+			ORDER BY like_count DESC
+			LIMIT ${pageNum*itemsPerPage},${itemsPerPage}
+			`
+			,(err,result)=>{
+				if(err&&catchCallback) {
+					catchCallback(err);
+				};
+				thenCallback(result);
+			}
+		)
+		break;
+	default :
+		catchCallback({});
+		return;
+	}
 }
 
 //축제 행 한개 가져오기
@@ -216,7 +273,7 @@ module.exports = {
 	getLatestEditDate,
 	importFestivals,
 	getFestival,
-	getOngoingFestivals,
+	getFestivals,
 	getUser,
 	registerUser,
 	unregisterUser

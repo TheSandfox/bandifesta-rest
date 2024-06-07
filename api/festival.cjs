@@ -18,6 +18,18 @@ const config = {
 	}
 }
 
+const festivalPeriodTypes = [
+	'전체',//0
+	'진행중',//1
+	'예정',//2
+	'마감'//3
+]
+
+const festivalSortMethods = [
+	'날짜순',//0
+	'좋아요순'//1
+]
+
 const twoDigits = (intVal)=>{
 	if (intVal<10) {
 		return '0'+String(intVal);
@@ -129,14 +141,14 @@ router.get('/import',(req,res)=>{
 	res.send('페스티발 임포트됨');
 })
 
-//진행중인 행사 가져오기
-router.get('/getOngoing',(req,res)=>{
+//행사 가져오기
+router.get('/getFestivals',(req,res)=>{
 	// console.log(req.query);
-	let {pageNum,itemsPerPage,language} = req.query;
-	let today = new Date();
-	let dateString = dateFormat(today);
+	let {pageNum,itemsPerPage,language,periodType,sortMethod} = req.query;
+	let dateString = req.query.dateValue?dateFormat(dateValue):dateFormat(new Date());
 	// console.log(dateString);
-	db.getOngoingFestivals(dateString,(pageNum-1),itemsPerPage,language,(festivals)=>{
+	db.getFestivals(dateString,(parseInt(pageNum)-1),parseInt(itemsPerPage),language,periodType,sortMethod,(festivals)=>{
+		// console.log(festivals.length);
 		res.send(festivals)
 	},(error)=>{
 		res.status(500).json({status:500});
@@ -202,6 +214,16 @@ router.get('/getDetail',(req,res)=>{
 	},(err)=>{
 		res.status(500).json({status:500});
 	});
+})
+
+//축제유형들
+router.get('/getFestivalPeriodTypes',(req,res)=>{
+	res.send(festivalPeriodTypes);
+})
+
+//정렬방식들
+router.get('/getFestivalSortMethods',(req,res)=>{
+	res.send(festivalSortMethods);
 })
 
 //테스트
