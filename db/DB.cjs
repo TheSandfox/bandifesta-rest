@@ -143,15 +143,15 @@ function getFestivals(dateString,pageNum,itemsPerPage,language,periodType,sortMe
 		break;
 	case 1 : 
 		//진행중
-		dateFilter = `WHERE festival.end_date > '${dateString}' AND festival.start_date < '${dateString}' AND `
+		dateFilter = `WHERE festival.end_date >= '${dateString}' AND festival.start_date <= '${dateString}' AND `
 		break;
 	case 2 : 
 		//예정
-		dateFilter = `WHERE festival.start_date > '${dateString}' AND `
+		dateFilter = `WHERE festival.start_date >= '${dateString}' AND `
 		break;
 	case 3 : 
 		//마감
-		dateFilter = `WHERE festival.end_date < '${dateString}' AND `
+		dateFilter = `WHERE festival.end_date <= '${dateString}' AND `
 		break;
 	default :
 		catchCallback({});
