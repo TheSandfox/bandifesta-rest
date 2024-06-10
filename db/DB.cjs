@@ -173,7 +173,7 @@ function getFestivals(dateString,pageNum,itemsPerPage,language,periodType,sortMe
 			${dateFilter}
 			festival.language = '${language}'
 			ORDER BY start_date DESC
-			LIMIT ${pageNum*itemsPerPage},${itemsPerPage}
+			LIMIT ${itemsPerPage} OFFSET ${pageNum*itemsPerPage}
 			`
 			,(err,result)=>{
 				if(err&&catchCallback) {
@@ -194,7 +194,7 @@ function getFestivals(dateString,pageNum,itemsPerPage,language,periodType,sortMe
 			festival.language = '${language}'
 			GROUP BY festival.festival_id
 			ORDER BY like_count DESC
-			LIMIT ${pageNum*itemsPerPage},${itemsPerPage}
+			LIMIT ${itemsPerPage} OFFSET ${pageNum*itemsPerPage}
 			`
 			,(err,result)=>{
 				if(err&&catchCallback) {

@@ -144,8 +144,8 @@ router.get('/import',(req,res)=>{
 //행사 가져오기
 router.get('/getFestivals',(req,res)=>{
 	// console.log(req.query);
-	let {pageNum,itemsPerPage,language,periodType,sortMethod} = req.query;
-	let dateString = req.query.dateValue?dateFormat(dateValue):dateFormat(new Date());
+	let {pageNum,itemsPerPage,language,periodType,sortMethod,dateValue} = req.query;
+	let dateString = dateValue?dateFormat(new Date(parseInt(dateValue))):dateFormat(new Date());
 	// console.log(dateString);
 	db.getFestivals(dateString,(parseInt(pageNum)-1),parseInt(itemsPerPage),language,periodType,sortMethod,(festivals)=>{
 		// console.log(festivals.length);
