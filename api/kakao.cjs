@@ -59,7 +59,7 @@ router.post('/getKakaoUser',(req,res)=>{
 			nickname:nickname,
 			profile:profile,
 			thumbnail:thumbnail,
-			admin:isAdmin(response.data['id'])
+			admin:String(isAdmin(response.data['id']))
 			// nickname:response.data.properties.nickname
 			// 	?response.data.properties.nickname
 			// 	:'',
