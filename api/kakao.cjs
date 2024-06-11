@@ -48,7 +48,7 @@ router.post('/getKakaoUser',(req,res)=>{
 		let nickname = '';
 		let profile = '';
 		let thumbnail = '';
-		console.log(response.data);
+		// console.log(response.data);
 		if (response.data.properties) {
 			nickname = response.data.properties.nickname;
 			profile = response.data.properties.profile_image;

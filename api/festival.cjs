@@ -216,6 +216,37 @@ router.get('/getDetail',(req,res)=>{
 	});
 })
 
+//축제조아요
+router.get('/likeFestival',(req,res)=>{
+	let {festivalId,userId,flag} = req.query;
+	db.likeFestival(festivalId,userId,flag,(result)=>{
+		res.send('festival Liked');
+	},(error)=>{
+		res.status(500).json({status:500});
+	})
+})
+
+//축제 조아요여부
+router.get('/isFestivalLiked',(req,res)=>{
+	let {festivalId,userId} = req.query;
+	db.isFestivalLiked(festivalId,userId,(result)=>{
+		res.send(Boolean(result[0].count>0));
+	},(error)=>{
+		res.status(500).json({status:500});
+	})
+})
+
+//축제 조아요갯수
+router.get('/getFestivalLikeCount',(req,res)=>{
+	let {festivalId} = req.query;
+	db.getFestivalLikeCount(festivalId,(result)=>{
+		// console.log(result);
+		res.send(result[0].count);
+	},(error)=>{
+		res.status(500).json({status:500});
+	})
+})
+
 //축제유형들
 router.get('/getFestivalPeriodTypes',(req,res)=>{
 	res.send(festivalPeriodTypes);

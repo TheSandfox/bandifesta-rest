@@ -224,6 +224,67 @@ function getFestival(festivalId,thenCallback,catchCallback){
 	})
 }
 
+//축제조아요
+function likeFestival(festivalId,userId,flag,thenCallback,catchCallback) {
+	console.log(flag);
+	if (String(flag)=='true') {
+		console.log('조아요생성!');
+		//조아요 생성
+		connection.query(`
+			INSERT INTO ${tableNames['festival_like']}(festival_id,user_id)
+			VALUES ('${festivalId}','${userId}')
+			ON DUPLICATE KEY UPDATE user_id = user_id;
+		`,(err,result)=>{
+			if(err&&catchCallback) {
+				catchCallback(err);
+				return;
+			}
+			thenCallback(result);
+		});
+	} else {
+		console.log('조아요취소!');
+		//조아요 취소
+		connection.query(`
+			DELETE FROM ${tableNames['festival_like']}
+			WHERE festival_id = '${festivalId}' AND user_id = '${userId}';
+		`,(err,result)=>{
+			if(err&&catchCallback) {
+				catchCallback(err);
+				return;
+			}
+			thenCallback(result);
+		})
+	}
+}
+
+//'특정유저'가 축제를 조아요했는지 여부
+function isFestivalLiked(festivalId,userId,thenCallback,catchCallback) {
+	connection.query(`
+		SELECT COUNT(*) AS count from ${tableNames['festival_like']}
+		WHERE festival_id = '${festivalId}' AND user_id = '${userId}';
+	`,(err,result)=>{
+		if(err&&catchCallback) {
+			catchCallback(err);
+			return;
+		}
+		thenCallback(result);
+	})
+}
+
+//축제의 조아요갯수
+function getFestivalLikeCount(festivalId,thenCallback,catchCallback) {
+	connection.query(`
+		SELECT COUNT(*) AS count from ${tableNames['festival_like']}
+		WHERE festival_id = '${festivalId}';
+	`,(err,result)=>{
+		if(err&&catchCallback) {
+			catchCallback(err);
+			return;
+		}
+		thenCallback(result);
+	})
+}
+
 //유저 정보(1개)
 function getUser(kakaoId,thenCallback,catchCallback) {
 	connection.query(
@@ -254,6 +315,7 @@ function registerUser(kakaoId,thenCallback,catchCallback) {
 			catchCallback(err);
 			return;
 		}
+		thenCallback(result);
 	})
 }
 
@@ -267,6 +329,7 @@ function unregisterUser(kakaoId,thenCallback,catchCallback) {
 			catchCallback(err);
 			return;
 		}
+		thenCallback(result);
 	})
 }
 
@@ -275,6 +338,9 @@ module.exports = {
 	importFestivals,
 	getFestival,
 	getFestivals,
+	likeFestival,
+	isFestivalLiked,
+	getFestivalLikeCount,
 	getUser,
 	registerUser,
 	unregisterUser
