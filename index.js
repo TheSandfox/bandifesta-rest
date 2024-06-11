@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const festivalApi = require('./api/festival.cjs');
 const kakaoApi = require('./api/kakao.cjs');
+const noticeApi = require('./api/notice.cjs');
 const PORT = process.env.PORT || 3001;
 
 app.use(cookieParser());
@@ -21,6 +22,7 @@ app.use(express.urlencoded({extended:false}));
 //API 라우터 임포트
 app.use('/api/festival',festivalApi.router);
 app.use('/api/kakao',kakaoApi.router);
+app.use('/api/notice',noticeApi.router);
  
 app.listen(PORT, () => {
 	//APP LISTEN 성공

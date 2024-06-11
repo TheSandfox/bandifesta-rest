@@ -243,10 +243,11 @@ function getUser(kakaoId,thenCallback,catchCallback) {
 
 //유저정보 등록(최초)
 function registerUser(kakaoId,thenCallback,catchCallback) {
+	let newName = parseInt(kakaoId).toString(16)
 	connection.query(
 		`
 		INSERT INTO ${tableNames['user']}(kakao_id,name)
-		VALUES(${kakaoId},'무명씨')
+		VALUES(${kakaoId},'${newName}')
 		`
 	,(err)=>{
 		if(err&&catchCallback) {

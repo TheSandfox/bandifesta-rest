@@ -3,6 +3,15 @@ const db = require('../db/DB.cjs');
 const router = express.Router();
 const KakaoLoginAPI = require('../externalapi/KakaoLoginAPI.cjs');
 
+const admins = [
+	3500733009
+]
+
+//어드민판별
+function isAdmin(kakaoId) {
+	return admins.includes(parseInt(kakaoId));
+}
+
 //로그인 시 토큰요청
 router.post('/login',(req,res)=>{
 	// console.log(req.body);
@@ -36,15 +45,30 @@ router.post('/login',(req,res)=>{
 //카카오에서 유저정보가져오깅
 router.post('/getKakaoUser',(req,res)=>{
 	KakaoLoginAPI.getKakaoUser(req.body.access_token,(response)=>{
+		let nickname = '';
+		let profile = '';
+		let thumbnail = '';
 		console.log(response.data);
+		if (response.data.properties) {
+			nickname = response.data.properties.nickname;
+			profile = response.data.properties.profile_image;
+			thumbnail = response.data.properties.thumbnail_image;
+		}
 		res.send({
 			id:response.data['id'],
-			nickname:response.data.properties.nickname
-				||'',
-			profile:response.data.properties.profile_image
-				||'',
-			thumbnail:response.data.properties.thumbnail_image
-				||'',
+			nickname:nickname,
+			profile:profile,
+			thumbnail:thumbnail,
+			admin:isAdmin(response.data['id'])
+			// nickname:response.data.properties.nickname
+			// 	?response.data.properties.nickname
+			// 	:'',
+			// profile:response.data.properties.profile
+			// 	?response.data.properties.profile
+			// 	:'',
+			// thumbnail:response.data.properties.thumbnail
+			// 	?response.data.properties.thumbnail
+			// 	:''
 		});
 	},(error)=>{
 		res.status(500).json({status:500});
