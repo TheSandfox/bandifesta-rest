@@ -210,6 +210,24 @@ function getFestivals(dateString,pageNum,itemsPerPage,language,periodType,sortMe
 	}
 }
 
+//좋아요에 추가된 축제들
+function getLikedFestivals(pageNum,itemsPerPage,userId,thenCallback,catchCallback){
+	connection.query(`
+		SELECT f.*
+		FROM festival f
+		JOIN festival_like fl ON f.festival_id = fl.festival_id
+		WHERE fl.user_id = '${userId}'
+		ORDER BY fl.like_date
+		LIMIT ${itemsPerPage} OFFSET ${pageNum*itemsPerPage};
+	`,(err,result)=>{
+		if(err&&catchCallback) {
+			catchCallback(err);
+			return;
+		}
+		thenCallback(result);
+	})
+}
+
 //축제 행 한개 가져오기
 function getFestival(festivalId,thenCallback,catchCallback){
 	connection.query(`
@@ -289,7 +307,7 @@ function getFestivalLikeCount(festivalId,thenCallback,catchCallback) {
 function getUser(kakaoId,thenCallback,catchCallback) {
 	connection.query(
 		`
-		SELECT kakao_id from ${tableNames['user']}
+		SELECT * from ${tableNames['user']}
 		WHERE kakao_id = '${kakaoId}'
 		`
 		,(err,result)=>{
@@ -337,6 +355,7 @@ module.exports = {
 	getLatestEditDate,
 	importFestivals,
 	getFestival,
+	getLikedFestivals,
 	getFestivals,
 	likeFestival,
 	isFestivalLiked,

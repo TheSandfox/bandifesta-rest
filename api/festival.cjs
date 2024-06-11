@@ -155,6 +155,18 @@ router.get('/getFestivals',(req,res)=>{
 	})
 })
 
+//좋아요에 있는 행사 가져오기
+router.get('/getLikedFestivals',(req,res)=>{
+	let {pageNum,itemsPerPage,userId} = req.query;
+	db.getLikedFestivals((parseInt(pageNum)-1),itemsPerPage,userId,(festivals)=>{
+		// console.log(festivals.length);
+		res.send(festivals)
+	},(error)=>{
+		console.log(error);
+		res.status(500).json({status:500});
+	})
+})
+
 //행사 디테일(Info)
 router.get('/getDetail',(req,res)=>{
 	let {festivalId} = req.query;
