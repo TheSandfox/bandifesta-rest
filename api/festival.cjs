@@ -27,8 +27,8 @@ const festivalPeriodTypes = [
 ]
 
 const festivalSortMethods = [
-	'날짜순',//0
-	'좋아요순'//1
+	'좋아요순',//0
+	'날짜순'//1
 ]
 
 const twoDigits = (intVal)=>{

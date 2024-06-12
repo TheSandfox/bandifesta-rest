@@ -166,24 +166,6 @@ function getFestivals(dateString,pageNum,itemsPerPage,language,periodType,sortMe
 	//셀렉트문
 	switch(parseInt(sortMethod)) {
 	case 0 :
-		//날짜순
-		connection.query(
-			`
-			SELECT * FROM ${tableNames['festival']}
-			${dateFilter}
-			festival.language = '${language}'
-			ORDER BY start_date DESC
-			LIMIT ${itemsPerPage} OFFSET ${pageNum*itemsPerPage}
-			`
-			,(err,result)=>{
-				if(err&&catchCallback) {
-					catchCallback(err);
-				};
-				thenCallback(result);
-			}
-		);
-		break;
-	case 1 :
 		//조아요순
 		connection.query(
 			`
@@ -203,6 +185,24 @@ function getFestivals(dateString,pageNum,itemsPerPage,language,periodType,sortMe
 				thenCallback(result);
 			}
 		)
+		break;
+	case 1 :
+		//날짜순
+		connection.query(
+			`
+			SELECT * FROM ${tableNames['festival']}
+			${dateFilter}
+			festival.language = '${language}'
+			ORDER BY start_date DESC
+			LIMIT ${itemsPerPage} OFFSET ${pageNum*itemsPerPage}
+			`
+			,(err,result)=>{
+				if(err&&catchCallback) {
+					catchCallback(err);
+				};
+				thenCallback(result);
+			}
+		);
 		break;
 	default :
 		catchCallback({});
