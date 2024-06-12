@@ -183,7 +183,10 @@ router.get('/getDetail',(req,res)=>{
 				festivalType:festival.festival_type
 			},(response1)=>{
 				//Info 조회 성공
-				let resObj = {...response1.body.items.item[0]};
+				let resObj = {
+					...result[0],
+					...response1.body.items.item[0]
+				};
 				TourAPI.getFestivalDetailIntro({
 					language:festival.language,
 					festivalId,
@@ -253,8 +256,8 @@ router.get('/isFestivalLiked',(req,res)=>{
 router.get('/getFestivalLikeCount',(req,res)=>{
 	let {festivalId} = req.query;
 	db.getFestivalLikeCount(festivalId,(result)=>{
-		// console.log(result);
-		res.send(result[0].count);
+		// console.log(result[0].count);
+		res.send(String(result[0].count));
 	},(error)=>{
 		res.status(500).json({status:500});
 	})
