@@ -342,12 +342,12 @@ function unregisterUser(kakaoId,thenCallback,catchCallback) {
 	connection.query(`
 		DELETE FROM ${tableNames['user']}
 		WHERE kakao_id = ${kakaoId};
-	`,(err,result)=>{
+	`,(err)=>{
 		if(err&&catchCallback) {
 			catchCallback(err);
 			return;
 		}
-		thenCallback(result);
+		thenCallback();
 	})
 }
 

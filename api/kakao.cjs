@@ -96,7 +96,7 @@ router.post('/logout',(req,res)=>{
 //연결끊기!
 router.post('/unlink',(req,res)=>{
 	KakaoLoginAPI.unlink(req.body.access_token,(response)=>{
-		db.unregisterUser(response.data.id);
+		db.unregisterUser(response.data.id,()=>{});
 		res.send(response.data);
 	},(error)=>{
 		res.status(500).json({status:500});
