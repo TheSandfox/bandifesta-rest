@@ -23,6 +23,7 @@ const festivalPeriodTypes = [
 	'진행중',//1
 	'예정',//2
 	'마감'//3
+	//'좋아요'//4
 ]
 
 const festivalSortMethods = [
