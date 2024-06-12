@@ -328,7 +328,7 @@ function registerUser(kakaoId,thenCallback,catchCallback) {
 		INSERT INTO ${tableNames['user']}(kakao_id,name)
 		VALUES(${kakaoId},'${newName}')
 		`
-	,(err)=>{
+	,(err,result)=>{
 		if(err&&catchCallback) {
 			catchCallback(err);
 			return;
