@@ -18,18 +18,36 @@ const config = {
 	}
 }
 
-const festivalPeriodTypes = [
-	'전체',//0
-	'진행중',//1
-	'예정',//2
-	'마감'//3
-	//'좋아요'//4
-]
+const festivalPeriodTypes = [[
+		'전체',//0
+		'진행중',//1
+		'예정',//2
+		'마감'//3
+		//'좋아요'//4
+	],[
+		'All',//0
+		'Ongoing',//1
+		'Scheduled',//2
+		'Expired'//3
+		//'좋아요'//4
+	],[
+		'すべて',//0
+		'進行中',//1
+		'予定',//2
+		'終了'//3
+		//'좋아요'//4
+]]
 
-const festivalSortMethods = [
+const festivalSortMethods = [[
 	'좋아요순',//0
 	'날짜순'//1
-]
+],[
+	'Favorites',//0
+	'Newest'//1
+],[
+	'いいね',//0
+	'最新'//1
+]]
 
 const twoDigits = (intVal)=>{
 	if (intVal<10) {
@@ -265,12 +283,34 @@ router.get('/getFestivalLikeCount',(req,res)=>{
 
 //축제유형들
 router.get('/getFestivalPeriodTypes',(req,res)=>{
-	res.send(festivalPeriodTypes);
+	let {language} = req.query;
+	switch (language) {
+	case 'Kor':
+		res.send(festivalPeriodTypes[0]);
+		break;
+	case 'Eng':
+		res.send(festivalPeriodTypes[1]);
+		break;
+	case 'Jpn':
+		res.send(festivalPeriodTypes[2]);
+		break;
+	}
 })
 
 //정렬방식들
 router.get('/getFestivalSortMethods',(req,res)=>{
-	res.send(festivalSortMethods);
+	let {language} = req.query;
+	switch (language) {
+	case 'Kor':
+		res.send(festivalSortMethods[0]);
+		break;
+	case 'Eng':
+		res.send(festivalSortMethods[1]);
+		break;
+	case 'Jpn':
+		res.send(festivalSortMethods[2]);
+		break;
+	}
 })
 
 //테스트
