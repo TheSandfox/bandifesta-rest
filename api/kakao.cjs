@@ -62,15 +62,6 @@ router.post('/getKakaoUser',(req,res)=>{
 				profile:profile,
 				thumbnail:thumbnail,
 				admin:String(isAdmin(response.data['id']))
-				// nickname:response.data.properties.nickname
-				// 	?response.data.properties.nickname
-				// 	:'',
-				// profile:response.data.properties.profile
-				// 	?response.data.properties.profile
-				// 	:'',
-				// thumbnail:response.data.properties.thumbnail
-				// 	?response.data.properties.thumbnail
-				// 	:''
 			});
 		},(error2)=>{
 
