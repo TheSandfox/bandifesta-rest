@@ -57,7 +57,7 @@ router.post('/getKakaoUser',(req,res)=>{
 		db.getUser(response.data['id'],(result)=>{
 			res.send({
 				id:response.data['id'],
-				name:result[0].name,
+				name:(result[0]?result[0].name:''),
 				nickname:nickname,
 				profile:profile,
 				thumbnail:thumbnail,
